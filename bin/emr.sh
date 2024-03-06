@@ -158,7 +158,7 @@ getNodes() {
     for instanceGroupId in ${instanceGroupIds}; do
         # convert to an array
         nodes+=($(aws emr list-instances --region $REGION --cluster-id $EMR_CLUSTER_ID | \
-            jq -r --arg instanceGroupId "$instanceGroupId" '.Instances[] | select(.InstanceGroupId == $instanceGroupId) | .PrivateDnsName' | tr -s ' '))
+            jq -r --arg instanceGroupId "$instanceGroupId" '.Instances[] | select(.InstanceGroupId == $instanceGroupId and .Status.State == "RUNNING") | .PrivateDnsName' | tr -s ' '))
     done
     echo "${nodes[@]}"
 }
