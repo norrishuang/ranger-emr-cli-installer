@@ -37,7 +37,7 @@ migrateKerberosDbOnKdcLocal() {
 testKerberosKdcConnectivity() {
     printHeading "TEST KERBEROS_KDC SSH CONNECTIVITY"
     if [[ -f $SSH_KEY && "$KERBEROS_KDC_HOST" != "" ]]; then
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$KERBEROS_KDC_HOST sudo whoami &>/dev/null
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T ec2-user@$KERBEROS_KDC_HOST sudo whoami &>/dev/null
         if [ ! "$?" = "0" ]; then
             echo "ERROR!! ssh connection to [ $KERBEROS_KDC_HOST ] failed!"
             exit 1
