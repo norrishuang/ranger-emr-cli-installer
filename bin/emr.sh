@@ -44,7 +44,7 @@ createEmrSecurityConfiguration() {
                 jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ClusterDedicatedKdcConfiguration.CrossRealmTrustConfiguration)' \
                 $APP_HOME/conf/emr/security-configuration-template.json > $confFile
             else
-                $APP_HOME/conf/emr/security-configuration-template-ext.json > $confFile
+                cp -f $APP_HOME/conf/emr/security-configuration-template-ext.json $confFile
             fi
         else
             echo "Invalid authentication type, only AD and LDAP are supported!"
