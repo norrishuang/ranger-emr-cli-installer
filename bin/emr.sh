@@ -40,8 +40,12 @@ createEmrSecurityConfiguration() {
             cp -f $APP_HOME/conf/emr/security-configuration-template.json $confFile
         elif [ "$AUTH_PROVIDER" = "openldap" ]; then
             # for ad, copy a new version from template file, but remove CrossRealmTrustConfiguration
-            jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ClusterDedicatedKdcConfiguration.CrossRealmTrustConfiguration)' \
-            $APP_HOME/conf/emr/security-configuration-template.json > $confFile
+            if [ -z "$TRUSTING_HOST" ]; then
+                jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ClusterDedicatedKdcConfiguration.CrossRealmTrustConfiguration)' \
+                $APP_HOME/conf/emr/security-configuration-template.json > $confFile
+            else
+                jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ClusterDedicatedKdcConfiguration.ExternalKdcConfiguration)' \
+                $APP_HOME/conf/emr/security-configuration-template-ext.json > $confFile
         else
             echo "Invalid authentication type, only AD and LDAP are supported!"
             exit 1
