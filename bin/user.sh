@@ -22,8 +22,8 @@ addExampleUsers() {
     # create kerberos mapping principals against openldap accounts.
     if [[ "$SOLUTION" = "emr-native" ]]; then
         testKerberosKdcConnectivity
-        distributeInstaller "hadoop" "$KERBEROS_KDC_HOST"
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$KERBEROS_KDC_HOST \
+        distributeInstaller "ec2-user" "$KERBEROS_KDC_HOST"
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T ec2-user@$KERBEROS_KDC_HOST \
             sudo sh $APP_REMOTE_HOME/bin/setup.sh add-example-users-on-kdc-local \
             --region $REGION \
             --solution $SOLUTION \
