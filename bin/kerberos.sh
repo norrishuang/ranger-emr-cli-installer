@@ -10,8 +10,8 @@ migrateKerberosDb() {
         echo "You have already migrated kerberos db to OpenLDAP, this is one-time job, can't rerun!"
     else
         testKerberosKdcConnectivity
-        distributeInstaller "ec2-user" "$KERBEROS_KDC_HOST"
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T ec2-user@$KERBEROS_KDC_HOST \
+        distributeInstaller "root" "$KERBEROS_KDC_HOST"
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T root@$KERBEROS_KDC_HOST \
             sudo sh $APP_REMOTE_HOME/bin/setup.sh migrate-kerberos-db-on-kdc-local \
             --region $REGION \
             --kerberos-realm $KERBEROS_REALM \
