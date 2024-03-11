@@ -40,6 +40,7 @@ distributeInstaller() {
     user="$1"
     host="$2"
     installer=ranger-emr-cli-installer
+    
     ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T $user@$host sudo rm -rf /tmp/$installer
     scp -o StrictHostKeyChecking=no -i $SSH_KEY -r $APP_HOME $user@$host:/tmp/$installer &>/dev/null
     ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T $user@$host <<EOSSH

@@ -10,8 +10,9 @@ migrateKerberosDb() {
         echo "You have already migrated kerberos db to OpenLDAP, this is one-time job, can't rerun!"
     else
         testKerberosKdcConnectivity
-        distributeInstaller "root" "$KERBEROS_KDC_HOST"
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T root@$KERBEROS_KDC_HOST \
+        echo "Starting migrate kerberos db..."
+        distributeInstaller "ec2-user" "$KERBEROS_KDC_HOST"
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T ec2-user@$KERBEROS_KDC_HOST \
             sudo sh $APP_REMOTE_HOME/bin/setup.sh migrate-kerberos-db-on-kdc-local \
             --region $REGION \
             --kerberos-realm $KERBEROS_REALM \
@@ -21,6 +22,7 @@ migrateKerberosDb() {
             --openldap-root-cn $OPENLDAP_ROOT_CN \
             --openldap-root-password $OPENLDAP_ROOT_PASSWORD
         touch "$MIGRATE_KERBEROS_DB_FLAG"
+        echo "Migrate kerberos db finish!"
     fi
 }
 
@@ -60,10 +62,14 @@ dumpKrbDb() {
     kadmin.local -q "listprincs" | tee /tmp/principals.txt
     # dump db to dump file
     kdb5_util dump /tmp/kdc-db.dump
+
+    echo "Dump KrbDB is SUCCESSFUL!!"
 }
 
 installKrbLdapPackages() {
     yum -y install krb5-server-ldap expect
+
+    echo "Install KrbLdap packages is SUCCESSFUL!!"
 }
 
 makePasswordFile() {
