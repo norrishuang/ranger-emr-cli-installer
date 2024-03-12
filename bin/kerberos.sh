@@ -122,7 +122,12 @@ createKrbDb() {
     expect {
         "Enter KDC database master key*" {
             send "$KERBEROS_KADMIN_PASSWORD\r"
-            expect "Re-enter KDC database master key*" { send "$KERBEROS_KADMIN_PASSWORD\r" }
+            expect "Re-enter KDC database master key*" { 
+                send "$KERBEROS_KADMIN_PASSWORD\r" 
+                expect "Enter DN of Kerberos container*" {
+                    send "cn=kerberos,dc=example,dc=com\r"
+                }
+            }
         }
     }
 	expect eof
@@ -130,11 +135,11 @@ EOF
 }
 
 restartKrb() {
-    systemctl restart krb5kdc kadmin
-    systemctl status krb5kdc kadmin
+    sudo systemctl restart krb5kdc kadmin
+    sudo systemctl status krb5kdc kadmin
 }
 
 restoreKrbDb() {
-    kdb5_util load -update /tmp/kdc-db.dump
+    sudo kdb5_util load -update /tmp/kdc-db.dump
 }
 
