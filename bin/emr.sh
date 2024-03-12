@@ -21,6 +21,7 @@ configSecurityConfigurationProps() {
     sed -i "s|@RANGER_ADMIN_SECRET_ARN@|$rangerAdminSecretArn|g" $confFile
     sed -i "s|@RANGER_PLUGIN_SECRET_ARN@|$rangerPluginSecretArn|g" $confFile
     sed -i "s|@AUDIT_EVENTS_LOG_GROUP_ARN@|$auditEventsLogGroupArn|g" $confFile
+    sed -i "s|@INTRANSITPEMS3OBJECT@|$INTRANSITPEMS3OBJECT|g" $confFile
 }
 
 createEmrSecurityConfiguration() {

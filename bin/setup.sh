@@ -25,7 +25,7 @@ OPT_KEYS=(
     OPENLDAP_BASE_DN OPENLDAP_ROOT_CN OPENLDAP_ROOT_DN OPENLDAP_ROOT_PASSWORD OPENLDAP_USERS_BASE_DN
     JAVA_HOME SKIP_INSTALL_MYSQL MYSQL_HOST MYSQL_ROOT_PASSWORD MYSQL_RANGER_DB_USER_PASSWORD
     SKIP_INSTALL_SOLR SOLR_HOST RANGER_HOST RANGER_PORT RANGER_REPO_URL RANGER_VERSION RANGER_PLUGINS
-    KERBEROS_KDC_HOST SKIP_MIGRATE_KERBEROS_DB OPENLDAP_HOST
+    KERBEROS_KDC_HOST SKIP_MIGRATE_KERBEROS_DB OPENLDAP_HOST INTRANSITPEMS3OBJECT
     EMR_CLUSTER_ID MASTER_INSTANCE_GROUP_ID SLAVE_INSTANCE_GROUP_IDS EMR_MASTER_NODES EMR_SLAVE_NODES EMR_CLUSTER_NODES EMR_ZK_QUORUM EMR_HDFS_URL EMR_FIRST_MASTER_NODE
     EXAMPLE_GROUP EXAMPLE_USERS SKIP_CONFIGURE_HUE RESTART_INTERVAL
 )
@@ -280,7 +280,7 @@ parseArgs() {
         solution:,enable-cross-realm-trust:,trusting-realm:,trusting-domain:,trusting-host:,ranger-version:,ranger-repo-url:,restart-interval:,ranger-host:,ranger-secrets-dir:,ranger-plugins:,\
         auth-provider:,ad-host:,ad-domain:,ad-domain-admin:,ad-domain-admin-password:,ad-base-dn:,ad-user-object-class:,\
         openldap-host:,openldap-base-dn:,openldap-root-cn:,openldap-root-password:,example-users:,\
-        sssd-bind-dn:,sssd-bind-password:,\
+        sssd-bind-dn:,sssd-bind-password:,sec-intransit-pem-s3object:,\
         skip-install-openldap:,openldap-user-dn-pattern:,openldap-group-search-filter:,openldap-base-dn:,ranger-bind-dn:,ranger-bind-password:,hue-bind-dn:,hue-bind-password:,openldap-user-object-class:,\
         skip-install-mysql:,mysql-host:,mysql-root-password:,mysql-ranger-db-user-password:,skip-install-solr:,solr-host:,\
         emr-cluster-id:,skip-configure-hue:\
@@ -388,6 +388,10 @@ parseArgs() {
                 ;;
             --trusting-host)
                 TRUSTING_HOST="${2}"
+                shift 2
+                ;;
+            --sec-intransit-pem-s3object)
+                INTRANSITPEMS3OBJECT="${2}"
                 shift 2
                 ;;
             --ad-host)
