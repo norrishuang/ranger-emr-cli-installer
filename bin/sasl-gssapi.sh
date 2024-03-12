@@ -10,30 +10,30 @@ enableSaslGssapi() {
 }
 
 provisionKrb5Conf() {
-    scp -o StrictHostKeyChecking=no -i $SSH_KEY hadoop@$KERBEROS_KDC_HOST:/etc/krb5.conf /tmp/krb5.conf
+    scp -o StrictHostKeyChecking=no -i $SSH_KEY ec2-user@$KERBEROS_KDC_HOST:/etc/krb5.conf /tmp/krb5.conf
     scp -o StrictHostKeyChecking=no -i $SSH_KEY /tmp/krb5.conf ec2-user@$OPENLDAP_HOST:/tmp/krb5.conf
     ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T ec2-user@$OPENLDAP_HOST sudo mv /tmp/krb5.conf /etc/krb5.conf
 }
 
 provisionOpenldapServiceKeytab() {
-    ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$KERBEROS_KDC_HOST <<EOSSH
+    ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T ec2-user@$KERBEROS_KDC_HOST <<EOSSH
         sudo kadmin.local -q "addprinc -randkey ldap/$OPENLDAP_HOST@$KERBEROS_REALM"
         sudo kadmin.local -q "ktadd -k /tmp/ldap.keytab ldap/$OPENLDAP_HOST@$KERBEROS_REALM"
         # add read permission, otherwise scp can't copy it
         sudo chmod a+r /tmp/ldap.keytab
 EOSSH
-    scp -o StrictHostKeyChecking=no -i $SSH_KEY hadoop@$KERBEROS_KDC_HOST:/tmp/ldap.keytab /tmp/ldap.keytab
+    scp -o StrictHostKeyChecking=no -i $SSH_KEY ec2-user@$KERBEROS_KDC_HOST:/tmp/ldap.keytab /tmp/ldap.keytab
     scp -o StrictHostKeyChecking=no -i $SSH_KEY /tmp/ldap.keytab ec2-user@$OPENLDAP_HOST:/tmp/ldap.keytab
 }
 
 provisionOpenldapHostKeytab() {
-    ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$KERBEROS_KDC_HOST <<EOSSH
+    ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T ec2-user@$KERBEROS_KDC_HOST <<EOSSH
         sudo kadmin.local -q "addprinc -randkey host/$OPENLDAP_HOST@$KERBEROS_REALM"
         sudo kadmin.local -q "ktadd -k /tmp/krb5.keytab host/$OPENLDAP_HOST@$KERBEROS_REALM"
         # add read permission, otherwise scp can't copy it
         sudo chmod a+r /tmp/krb5.keytab
 EOSSH
-    scp -o StrictHostKeyChecking=no -i $SSH_KEY hadoop@$KERBEROS_KDC_HOST:/tmp/krb5.keytab /tmp/krb5.keytab
+    scp -o StrictHostKeyChecking=no -i $SSH_KEY ec2-user@$KERBEROS_KDC_HOST:/tmp/krb5.keytab /tmp/krb5.keytab
     scp -o StrictHostKeyChecking=no -i $SSH_KEY /tmp/krb5.keytab ec2-user@$OPENLDAP_HOST:/tmp/krb5.keytab
 }
 
@@ -139,7 +139,7 @@ enableSaslGssapiOnEmrCluster() {
 installSaslGssapiOnEmrCluster() {
     # install on each node of EMR cluster
     for node in $(getEmrClusterNodes); do
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$node \
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T ec2-user@$node \
         sudo yum -y install openldap-clients cyrus-sasl-lib cyrus-sasl-gssapi cyrus-sasl-devel krb5-workstation
     done
 }
@@ -163,14 +163,14 @@ configSshdForGssapiOnEmrCluster() {
         done
 EOF
     for node in $(getEmrClusterNodes); do
-        scp -o StrictHostKeyChecking=no -i $SSH_KEY /tmp/sshd-gssapi-snippet.sh hadoop@$node:/tmp/sshd-gssapi-snippet.sh
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$node sudo sh /tmp/sshd-gssapi-snippet.sh
+        scp -o StrictHostKeyChecking=no -i $SSH_KEY /tmp/sshd-gssapi-snippet.sh ec2-user@$node:/tmp/sshd-gssapi-snippet.sh
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T ec2-user@$node sudo sh /tmp/sshd-gssapi-snippet.sh
     done
 }
 
 restartSshdOnEmrCluster() {
     for node in $(getEmrClusterNodes); do
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$node <<EOSSH
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T ec2-user@$node <<EOSSH
         sudo systemctl restart sshd
         sudo systemctl status sshd
 EOSSH
