@@ -31,11 +31,6 @@
           "App":"EMRFS-S3",
           "ClientSecretARN":"@RANGER_PLUGIN_SECRET_ARN@",
           "PolicyRepositoryName":"emrfs"
-        },
-        {
-          "App":"Trino",
-          "ClientSecretARN":"@RANGER_PLUGIN_SECRET_ARN@",
-          "PolicyRepositoryName":"trino"
         }
       ],
       "AuditConfiguration":{
