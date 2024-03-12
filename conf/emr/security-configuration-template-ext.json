@@ -1,14 +1,4 @@
 {
-  "EncryptionConfiguration": {
-		"EnableInTransitEncryption": true,
-		"EnableAtRestEncryption": false,
-		"InTransitEncryptionConfiguration": {
-			"TLSCertificateConfiguration": {
-				"CertificateProviderType": "PEM",
-				"S3Object": "@INTRANSITPEMS3OBJECT@"
-			}
-		}
-	},
   "AuthenticationConfiguration": {
     "KerberosConfiguration": {
       "Provider": "ExternalKdc",
