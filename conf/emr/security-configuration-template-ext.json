@@ -4,7 +4,8 @@
 		"EnableAtRestEncryption": false,
 		"InTransitEncryptionConfiguration": {
 			"TLSCertificateConfiguration": {
-				"CertificateProviderType": "PEM"
+				"CertificateProviderType": "PEM",
+        "S3Object": ""
 			}
 		}
 	},
