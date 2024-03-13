@@ -63,11 +63,15 @@ removeRangerSecrets() {
 createKeyCertPair() {
     principal="$1"
     openssl req -x509 -newkey rsa:2048 -nodes -keyout $RANGER_SECRETS_DIR/${principal}.key -out $RANGER_SECRETS_DIR/${principal}.crt -days 3650  -subj "/C=CN/ST=SHANGHAI/L=SHANGHAI/O=EXAMPLE/OU=IT/CN=$CERTIFICATE_CN"
-    cp $RANGER_SECRETS_DIR/${principal}.key privateKey.pem
-    cp $RANGER_SECRETS_DIR/${principal}.crt certificateChain.pem
-    cp certificateChain.pem trustedCertificates.pem
-    zip -r -X my-certs.zip certificateChain.pem privateKey.pem trustedCertificates.pem
-    aws s3 cp my-certs.zip $INTRANSITPEMS3OBJECT
+    
+    # copy to S3 bucket, if specified
+    if [ "$INTRANSITPEMS3OBJECT" != "" ]; then
+        cp $RANGER_SECRETS_DIR/${principal}.key privateKey.pem
+        cp $RANGER_SECRETS_DIR/${principal}.crt certificateChain.pem
+        cp certificateChain.pem trustedCertificates.pem
+        zip -r -X my-certs.zip certificateChain.pem privateKey.pem trustedCertificates.pem
+        aws s3 cp my-certs.zip $INTRANSITPEMS3OBJECT
+    fi
 
 }
 
