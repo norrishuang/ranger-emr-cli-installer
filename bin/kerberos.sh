@@ -96,7 +96,14 @@ configKdc() {
         if [ -f $configFile ]; then
             cp $configFile $configFile.$(date +%s)
             # find "database_name", comment out, then insert "database_module = openldap_ldapconf"
-            sed -i 's/\(^\s*\)database_name\(.*\)/\1#database_name\2\n\1database_module = openldap_ldapconf/g' $configFile
+            # sed -i 's/\(^\s*\)database_name\(.*\)/\1#database_name\2\n\1database_module = openldap_ldapconf/g' $configFile
+
+            line_number=$(grep -n "database_module = openldap_ldapconf" $configFile | cut -d: -f1)
+            if [ "$line_number" == "" ]; then
+                line_number=$(grep -n "acl_file = /var/kerberos/krb5kdc/kadm5.acl" $configFile | cut -d: -f1)
+                sed -i "${line_number}a\  database_module = openldap_ldapconf" $configFile
+            fi
+
             # insert moudle [dbmodules]
             tee -a $configFile &>/dev/null <<EOF
         [dbmodules]
@@ -125,7 +132,7 @@ createKrbDb() {
             expect "Re-enter KDC database master key*" { 
                 send "$KERBEROS_KADMIN_PASSWORD\r" 
                 expect "Enter DN of Kerberos container*" {
-                    send "cn=kerberos,dc=example,dc=com\r"
+                    send "cn=kerberos,$OPENLDAP_BASE_DN\r"
                 }
             }
         }
@@ -135,11 +142,11 @@ EOF
 }
 
 restartKrb() {
-    sudo systemctl restart krb5kdc kadmin
-    sudo systemctl status krb5kdc kadmin
+    systemctl restart krb5kdc kadmin
+    systemctl status krb5kdc kadmin
 }
 
 restoreKrbDb() {
-    sudo kdb5_util load -update /tmp/kdc-db.dump
+    kdb5_util load -update /tmp/kdc-db.dump
 }
 
