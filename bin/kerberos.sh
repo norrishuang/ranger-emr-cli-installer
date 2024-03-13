@@ -96,19 +96,19 @@ configKdc() {
         if [ -f $configFile ]; then
             cp $configFile $configFile.$(date +%s)
             # find "database_name", comment out, then insert "database_module = openldap_ldapconf"
-
-            if [ "$KERBEROS_KDC_HOST" == "" ]; then
-                sed -i 's/\(^\s*\)database_name\(.*\)/\1#database_name\2\n\1database_module = openldap_ldapconf/g' $configFile
-            else
-                # external KDC
-                line_number=$(grep -n "database_module = openldap_ldapconf" $configFile | cut -d: -f1)
-                if [ "$line_number" == "" ]; then
-                    line_number=$(grep -n "acl_file = /var/kerberos/krb5kdc/kadm5.acl" $configFile | cut -d: -f1)
-                    sed -i "${line_number}a\  database_module = openldap_ldapconf" $configFile
-                    line_number=$((line_number+1))
-                    sed -i "${line_number}a\  max_renewable_life = 7d Oh m s" $configFile
-                fi
-            fi
+            sed -i 's/\(^\s*\)database_name\(.*\)/\1#database_name\2\n\1database_module = openldap_ldapconf/g' $configFile
+            # if [ "$KERBEROS_KDC_HOST" == "" ]; then
+            #     sed -i 's/\(^\s*\)database_name\(.*\)/\1#database_name\2\n\1database_module = openldap_ldapconf/g' $configFile
+            # else
+            #     # external KDC
+            #     line_number=$(grep -n "database_module = openldap_ldapconf" $configFile | cut -d: -f1)
+            #     if [ "$line_number" == "" ]; then
+            #         line_number=$(grep -n "acl_file = /var/kerberos/krb5kdc/kadm5.acl" $configFile | cut -d: -f1)
+            #         sed -i "${line_number}a\  database_module = openldap_ldapconf" $configFile
+            #         line_number=$((line_number+1))
+            #         sed -i "${line_number}a\  max_renewable_life = 7d Oh m s" $configFile
+            #     fi
+            # fi
 
             # insert moudle [dbmodules]
             tee -a $configFile &>/dev/null <<EOF
