@@ -5,7 +5,7 @@
 		"InTransitEncryptionConfiguration": {
 			"TLSCertificateConfiguration": {
 				"CertificateProviderType": "PEM",
-        "S3Object": ""
+        "S3Object": "@INTRANSITPEMS3OBJECT@"
 			}
 		}
 	},

@@ -105,6 +105,8 @@ configKdc() {
                 if [ "$line_number" == "" ]; then
                     line_number=$(grep -n "acl_file = /var/kerberos/krb5kdc/kadm5.acl" $configFile | cut -d: -f1)
                     sed -i "${line_number}a\  database_module = openldap_ldapconf" $configFile
+                    line_number=$((line_number+1))
+                    sed -i "${line_number}a\  max renewable life =7d Oh m s" $configFile
                 fi
             fi
 
