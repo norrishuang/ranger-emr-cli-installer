@@ -18,16 +18,6 @@
       "AdminServerSecretARN":"@RANGER_ADMIN_SECRET_ARN@",
       "RangerPluginConfigurations":[
         {
-          "App":"Spark",
-          "ClientSecretARN":"@RANGER_PLUGIN_SECRET_ARN@",
-          "PolicyRepositoryName":"spark"
-        },
-        {
-          "App":"Hive",
-          "ClientSecretARN":"@RANGER_PLUGIN_SECRET_ARN@",
-          "PolicyRepositoryName":"hive"
-        },
-        {
           "App":"EMRFS-S3",
           "ClientSecretARN":"@RANGER_PLUGIN_SECRET_ARN@",
           "PolicyRepositoryName":"emrfs"
