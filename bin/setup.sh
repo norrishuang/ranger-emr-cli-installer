@@ -339,7 +339,7 @@ parseArgs() {
                 # for emr-native solution, https is required!
                 elif [ "$SOLUTION" = "emr-native" ]; then
                     RANGER_PROTOCOL="https"
-                    RANGER_PORT="6080"
+                    RANGER_PORT="6182"
                 else
                     echo "For --solution option, only 'open-source' or 'emr-native' is acceptable!"
                     exit 1

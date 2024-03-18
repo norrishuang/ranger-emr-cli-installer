@@ -112,7 +112,7 @@ installRangerAdmin() {
         # it's NOT required to add ranger into kerberos
         # configRangerAdminKrbProps $confFile
         # configRangerAdminHttpsProps $confFile
-        configRangerAdminHttpProps $confFile
+        configRangerAdminHttpsProps $confFile
     elif [ "$SOLUTION" = "open-source" ]; then
         configRangerAdminHttpProps $confFile
     else
