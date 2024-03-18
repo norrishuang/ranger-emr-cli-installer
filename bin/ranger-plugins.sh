@@ -78,12 +78,12 @@ testEmrNamenodeConnectivity() {
 testSolrConnectivityFromEmrNodes() {
     printHeading "TEST CONNECTIVITY FROM EMR NODES TO SOLR"
     for node in $(getEmrClusterNodes); do
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$node <<EOF
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T ec2-user@$node <<EOF
         if ! nc --version &>/dev/null; then
             sudo yum -y install nc
         fi
 EOF
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$node nc -vz $SOLR_HOST 8983
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T ec2-user@$node nc -vz $SOLR_HOST 8983
         if [ "$?" = "0" ]; then
             echo "Connecting to solr server from [ $node ] is SUCCESSFUL!!"
         else
@@ -96,12 +96,12 @@ EOF
 testRangerAdminConnectivityFromEmrNodes() {
     printHeading "TEST CONNECTIVITY FROM EMR NODES TO RANGER"
     for node in $(getEmrClusterNodes); do
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$node <<EOF
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T ec2-user@$node <<EOF
         if ! nc --version &>/dev/null; then
             sudo yum -y install nc
         fi
 EOF
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$node nc -vz $RANGER_HOST $RANGER_PORT
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T ec2-user@$node nc -vz $RANGER_HOST $RANGER_PORT
         if [ "$?" = "0" ]; then
             echo "Connecting to ranger server from [ $node ] is SUCCESSFUL!!"
         else
