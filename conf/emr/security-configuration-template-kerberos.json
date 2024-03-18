@@ -1,0 +1,13 @@
+{
+  "AuthenticationConfiguration": {
+    "KerberosConfiguration": {
+      "Provider": "ExternalKdc",
+      "ExternalKdcConfiguration": {
+        "TicketLifetimeInHours": 24,
+        "KdcServerType": "Single",
+        "AdminServer": "@TRUSTING_HOST@:749",
+        "KdcServer": "@TRUSTING_HOST@:88"
+      }
+    }
+  }
+}
