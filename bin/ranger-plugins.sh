@@ -151,7 +151,7 @@ installRangerEmrNativeSparkPlugin() {
 
 # --------------------------------------   EMR Native Hive PlugIn Operations   --------------------------------------- #
 
-installRangerEmrNativeHivePlugin() {
+installRangerEmrNativeHivePlugin() { 
     printHeading "INSTALL EMR NATIVE RANGER HIVE PLUGIN"
         cp $APP_HOME/policy/emr-native-hive-repo.json $APP_HOME/policy/.emr-native-hive-repo.json
     sed -i "s|@CERTIFICATE_CN@|$CERTIFICATE_CN|g" $APP_HOME/policy/.emr-native-hive-repo.json

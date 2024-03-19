@@ -28,6 +28,9 @@ createRangerSecrets() {
     createKeyCertPair "ranger-plugin"
     createKeystore "ranger-plugin"
 
+    # for intansits
+    createKeyCertPairForInTransit
+
     # build truststore file used by ranger admin, be careful, this file NOT USED!
     # instead, plugins crts will install to JVM cacerts file.
     createOrImportToTruststore "ranger-admin" "ranger-admin"# trust self
@@ -65,14 +68,28 @@ createKeyCertPair() {
     openssl req -x509 -newkey rsa:2048 -nodes -keyout $RANGER_SECRETS_DIR/${principal}.key -out $RANGER_SECRETS_DIR/${principal}.crt -days 3650  -subj "/C=CN/ST=SHANGHAI/L=SHANGHAI/O=EXAMPLE/OU=IT/CN=$CERTIFICATE_CN"
     
     # copy to S3 bucket, if specified
+    # if [ "$INTRANSITPEMS3OBJECT" != "" ]; then
+    #     cp $RANGER_SECRETS_DIR/${principal}.key privateKey.pem
+    #     cp $RANGER_SECRETS_DIR/${principal}.crt certificateChain.pem
+    #     cp certificateChain.pem trustedCertificates.pem
+    #     zip -r -X my-certs.zip certificateChain.pem privateKey.pem trustedCertificates.pem
+    #     aws s3 cp my-certs.zip $INTRANSITPEMS3OBJECT
+    # fi
+}
+
+
+createKeyCertPairForInTransit() {
+    # principal="$1"
+    # openssl req -x509 -newkey rsa:2048 -nodes -keyout $RANGER_SECRETS_DIR/${principal}.key -out $RANGER_SECRETS_DIR/${principal}.crt -days 3650  -subj "/C=CN/ST=SHANGHAI/L=SHANGHAI/O=EXAMPLE/OU=IT/CN=$CERTIFICATE_CN"
+    
+    # copy to S3 bucket, if specified
     if [ "$INTRANSITPEMS3OBJECT" != "" ]; then
-        cp $RANGER_SECRETS_DIR/${principal}.key privateKey.pem
-        cp $RANGER_SECRETS_DIR/${principal}.crt certificateChain.pem
+        printHeading "CREATE INTRANSIT AND " 
+        openssl req -x509 -newkey rsa:1024 -keyout privateKey.pem -out certificateChain.pem -days 365 -nodes -subj "/C=US/ST=Washington/L=Seattle/O=MyOrg/OU=MyDept/CN=$CERTIFICATE_CN_REGION"
         cp certificateChain.pem trustedCertificates.pem
         zip -r -X my-certs.zip certificateChain.pem privateKey.pem trustedCertificates.pem
         aws s3 cp my-certs.zip $INTRANSITPEMS3OBJECT
     fi
-
 }
 
 createKeystore() {

@@ -304,12 +304,13 @@ parseArgs() {
                 # 2. compute.internal for other regions
                 if [ "$REGION" = "us-east-1" ]; then
                     CERTIFICATE_CN="*.ec2.internal"
+                    CERTIFICATE_CN_REGION="*.ec2.internal"
                 else
                     # BE CAREFUL:
                     # SSL: certificate subject name '*.compute.internal' does not match target host name 'ip-x-x-x-x.cn-north-1.compute.internal'
                     # I don't know why emr native plugin can work with cn "*.compute.internal", it seems emr native does NOT sync policies via https.
                     # BUT for opensource plugins, "*.compute.internal"??? testing!!!
-                    # CERTIFICATE_CN="*.${REGION}.compute.internal"
+                    CERTIFICATE_CN_REGION="*.${REGION}.compute.internal"
                     CERTIFICATE_CN="*.compute.internal"
                 fi
                 # 1. for china, arn root is aws-cn
