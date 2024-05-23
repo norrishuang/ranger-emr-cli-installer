@@ -258,6 +258,12 @@ installRangerPlugins() {
         open-source-hbase)
             installRangerOpenSourceHbasePlugin
             ;;
+        open-source-metastore)
+            installRangerOpenSourceHiveMetasorePlugin
+            ;;
+        open-source-yarn)
+            installRangerOpenSourceYarnPlugin
+            ;;
         *)
             if [ "$plugin" = "" ]; then
                 echo "ERROR! Please provide plugins to be installed via option: --ranger-plugins."
@@ -595,6 +601,8 @@ parseArgs() {
     additionalOpts=$*
     # build ranger repo file url
     RANGER_REPO_FILE_URL="$RANGER_REPO_URL/$RANGER_VERSION/ranger-repo.zip"
+    # build ranger hive metastore file url
+    RANGER_REPO_HIVE_METASTORE_FILE_URL="https://github.com/Jrebel-i/ranger-repo/releases/download/2.1.0/ranger-2.1.0-metastore-plugin.tar.gz"
     # build ranger admin url
     RANGER_URL="${RANGER_PROTOCOL}://${RANGER_HOST}:${RANGER_PORT}"
 
@@ -1022,4 +1030,3 @@ case $ACTION in
 #        printUsage
     ;;
 esac
-

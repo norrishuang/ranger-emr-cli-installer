@@ -143,7 +143,7 @@ getSlaveInstanceGroupIds() {
         fi
         if [ "$SLAVE_INSTANCE_GROUP_IDS" = "" ]; then
             SLAVE_INSTANCE_GROUP_IDS=$(aws emr describe-cluster --region $REGION --cluster-id $EMR_CLUSTER_ID | \
-                jq -r '.Cluster.InstanceGroups[] | select(((.InstanceGroupType == "CORE") or (.InstanceGroupType == "TASK")) and .Status.State=="RUNNING") | .Id' | tr -s ' ')
+                jq -r '.Cluster.InstanceGroups[] | select((.InstanceGroupType == "CORE") or (.InstanceGroupType == "TASK")) and .Status.State=="RUNNING") | .Id' | tr -s ' ')
         fi
         echo $SLAVE_INSTANCE_GROUP_IDS
     else

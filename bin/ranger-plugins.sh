@@ -223,7 +223,10 @@ installRangerOpenSourceHdfsPlugin() {
             sudo cp -r $installFilesDir $installHome
             # the enable-hdfs-plugin.sh just work with open source version of hadoop,
             # for emr, we have to copy ranger jars to /usr/lib/hadoop-hdfs/lib/
-            sudo find $installHome/lib -name *.jar -exec cp {} /usr/lib/hadoop-hdfs/lib/ \;
+            # sudo find $installHome/lib -name *.jar -exec cp {} /usr/lib/hadoop-hdfs/lib/ \;
+            sudo find $installHome/lib -name "*.jar" -not -name "ranger-hdfs-plugin-shim*.jar" -exec cp {} /usr/lib/hadoop-hdfs/lib/ \;
+            sudo wget https://repo1.maven.org/maven2/org/codehaus/jackson/jackson-jaxrs/1.9.13/jackson-jaxrs-1.9.13.jar -P /usr/lib/hadoop-hdfs/lib/
+
             sudo sh $installHome/enable-hdfs-plugin.sh
             # NOTE: from a certain version of EMR 6.x, a strange issue is: enable hdfs plugin does NOT work anymore
             # but if enable twice, it will work! both ranger and EMR are changing with version iteration.
@@ -301,6 +304,119 @@ restartHiveServer2() {
     done
 }
 
+# -------------------------------------   Open Source Hive Metastore PlugIn Operations   --------------------------------------- #
+
+initRangerOpenSourceHiveMetasoreRepo() {
+    printHeading "INIT RANGER HIVE REPO"
+    cp $APP_HOME/policy/open-source-metastore-repo.json $APP_HOME/policy/.open-source-metastore-repo.json
+    sed -i "s|@EMR_CLUSTER_ID@|$EMR_CLUSTER_ID|g" $APP_HOME/policy/.open-source-metastore-repo.json
+    sed -i "s|@EMR_FIRST_MASTER_NODE@|$(getEmrFirstMasterNode)|g" $APP_HOME/policy/.open-source-metastore-repo.json
+    curl -iv -u admin:admin -d @$APP_HOME/policy/.open-source-metastore-repo.json -H "Content-Type: application/json" \
+        -X POST $RANGER_URL/service/public/api/repository/
+    echo ""
+}
+
+installRangerOpenSourceHiveMetasorePlugin() {
+    # Must init repo first before install plugin
+    initRangerOpenSourceHiveMetasoreRepo
+    printHeading "INSTALL RANGER HIVE METASTORE PLUGIN"
+    tar -zxvf /tmp/ranger-repo/ranger-$RANGER_VERSION-metastore-plugin.tar.gz -C /tmp/ &>/dev/null
+    installFilesDir=/tmp/ranger-$RANGER_VERSION-metastore-plugin
+    confFile=$installFilesDir/install.properties
+    # backup install.properties
+    cp $confFile $confFile.$(date +%s)
+    cp $APP_HOME/conf/ranger-plugin/metastore-template.properties $confFile
+    sed -i "s|@EMR_CLUSTER_ID@|$EMR_CLUSTER_ID|g" $confFile
+    sed -i "s|@SOLR_HOST@|$SOLR_HOST|g" $confFile
+    sed -i "s|@RANGER_HOST@|$RANGER_HOST|g" $confFile
+    installHome=/opt/ranger-$RANGER_VERSION-metastore-plugin
+    for masterNode in $(getEmrMasterNodes); do
+        printHeading "INSTALL RANGER HIVE METASTORE PLUGIN ON MASTER NODE: [ $masterNode ] "
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$masterNode sudo rm -rf $installFilesDir $installHome
+        # NOTE: we can't copy files from local /tmp/plugin-dir to remote /opt/plugin-dir,
+        # because hadoop user has no write permission at /opt
+        scp -o StrictHostKeyChecking=no -i $SSH_KEY -r $installFilesDir hadoop@$masterNode:$installFilesDir &>/dev/null
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$masterNode <<EOF
+            sudo cp -r $installFilesDir $installHome
+            # the enable-metastore-plugin.sh just work with open source version of hadoop,
+            # for emr, we have to copy ranger jars to /usr/lib/hive/lib/
+            sudo find $installHome/lib -name *.jar -exec cp {} /usr/lib/hive/lib/ \;
+            sudo sh $installHome/enable-metastore-plugin.sh
+EOF
+    done
+    restartHiveMetasoreServer2
+}
+
+restartHiveMetasoreServer2() {
+    printHeading "RESTART HIVESERVER2"
+    for masterNode in $(getEmrMasterNodes); do
+        echo "STOP HIVESERVER2 ON MASTER NODE: [ $masterNode ]"
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$masterNode sudo systemctl stop hive-server2 hive-hcatalog-server
+
+        sleep $RESTART_INTERVAL
+        echo "START HIVESERVER2 ON MASTER NODE: [ $masterNode ]"
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$masterNode sudo systemctl start hive-server2 hive-hcatalog-server
+
+        sleep $RESTART_INTERVAL
+    done
+}
+
+# -------------------------------------   Open Source Yarn PlugIn Operations   --------------------------------------- #
+
+initRangerOpenSourceYarnRepo() {
+    printHeading "INIT RANGER YARN REPO"
+    cp $APP_HOME/policy/open-source-yarn-repo.json $APP_HOME/policy/.open-source-yarn-repo.json
+    sed -i "s|@EMR_CLUSTER_ID@|$EMR_CLUSTER_ID|g" $APP_HOME/policy/.open-source-yarn-repo.json
+    sed -i "s|@EMR_FIRST_MASTER_NODE@|$(getEmrFirstMasterNode)|g" $APP_HOME/policy/.open-source-yarn-repo.json
+    curl -iv -u admin:admin -d @$APP_HOME/policy/.open-source-yarn-repo.json -H "Content-Type: application/json" \
+        -X POST $RANGER_URL/service/plugins/services/
+    echo ""
+}
+
+installRangerOpenSourceYarnPlugin() {
+    # Must init repo first before install plugin
+    initRangerOpenSourceYarnRepo
+    printHeading "INSTALL RANGER Yarn PLUGIN"
+    tar -zxvf /tmp/ranger-repo/ranger-$RANGER_VERSION-yarn-plugin.tar.gz -C /tmp/ &>/dev/null
+    installFilesDir=/tmp/ranger-$RANGER_VERSION-yarn-plugin
+    confFile=$installFilesDir/install.properties
+    # backup install.properties
+    cp $confFile $confFile.$(date +%s)
+    cp $APP_HOME/conf/ranger-plugin/yarn-template.properties $confFile
+    sed -i "s|@EMR_CLUSTER_ID@|$EMR_CLUSTER_ID|g" $confFile
+    sed -i "s|@SOLR_HOST@|$SOLR_HOST|g" $confFile
+    sed -i "s|@RANGER_HOST@|$RANGER_HOST|g" $confFile
+    installHome=/opt/ranger-$RANGER_VERSION-yarn-plugin
+    for node in $(getEmrMasterNodes); do
+        printHeading "INSTALL RANGER Yarn PLUGIN ON NODE: [ $node ]: "
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$node sudo rm -rf $installFilesDir $installHome
+        # NOTE: we can't copy files from local /tmp/plugin-dir to remote /opt/plugin-dir,
+        # because hadoop user has no write permission at /opt
+        scp -o StrictHostKeyChecking=no -i $SSH_KEY -r $installFilesDir hadoop@$node:$installFilesDir &>/dev/null
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$node <<EOF
+            sudo cp -r $installFilesDir $installHome
+            # the enable-yarn-plugin.sh just work with open source version of hadoop,
+            # for emr, we have to copy ranger jars to /usr/lib/hadoop-yarn/lib/
+            # sudo find $installHome/lib -name *.jar -exec cp {} /usr/lib/hadoop-yarn/lib/ \;
+            sudo sed -i 's|\${HCOMPONENT_INSTALL_DIR}/share/hadoop/hdfs/lib|\${HCOMPONENT_INSTALL_DIR}|g' $installHome/enable-yarn-plugin.sh
+            sudo sh $installHome/enable-yarn-plugin.sh
+EOF
+    done
+    restartYarnServer
+}
+
+restartYarnServer() {
+    printHeading "RESTART Yarn ResourceManager"
+    for node in $(getEmrMasterNodes); do
+        echo "STOP Yarn-ResourceManager ON MASTER NODE: [ $node ]"
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$node sudo systemctl stop hadoop-yarn-resourcemanager
+        sleep $RESTART_INTERVAL
+        echo "START Yarn-ResourceManager ON MASTER NODE: [ $node ]"
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$node sudo systemctl start hadoop-yarn-resourcemanager
+        sleep $RESTART_INTERVAL
+    done
+}
+
 # -------------------------------------   Open Source HBase PlugIn Operations   -------------------------------------- #
 
 initRangerOpenSourceHbaseRepo() {
@@ -364,4 +480,3 @@ restartHbase() {
         sleep $RESTART_INTERVAL
     done
 }
-

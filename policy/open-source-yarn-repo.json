@@ -1,0 +1,13 @@
+{
+  "name":"YARN_@EMR_CLUSTER_ID@",
+  "description":"Yarn Repo",
+  "isEnabled":true,
+  "type":"yarn",
+  "tagService":"",
+  "configs":{
+    "username":"hadoop",
+    "password":"hadoop",
+    "hadoop.security.authentication": "simple",
+    "yarn.url":"http://@EMR_FIRST_MASTER_NODE@:8088"
+  }
+}
