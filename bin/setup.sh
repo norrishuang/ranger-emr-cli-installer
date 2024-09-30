@@ -156,7 +156,11 @@ waitForCreatingEmrCluster() {
             askHueAndLdapIntegration "$((num++))"
         fi
 
-        confirmed=$(askForConfirmation "Do you confirm all above?")
+        if [[ "$AUTO_CONFIRM" = "false" ]]; then
+          confirmed=$(askForConfirmation "Do you confirm all above?")
+        else
+          confirmed="true"
+        fi
         echo ""
     done
 
