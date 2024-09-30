@@ -27,7 +27,7 @@ OPT_KEYS=(
     SKIP_INSTALL_SOLR SOLR_HOST RANGER_HOST RANGER_PORT RANGER_REPO_URL RANGER_VERSION RANGER_PLUGINS
     KERBEROS_KDC_HOST SKIP_MIGRATE_KERBEROS_DB OPENLDAP_HOST
     EMR_CLUSTER_ID MASTER_INSTANCE_GROUP_ID SLAVE_INSTANCE_GROUP_IDS EMR_MASTER_NODES EMR_SLAVE_NODES EMR_CLUSTER_NODES EMR_ZK_QUORUM EMR_HDFS_URL EMR_FIRST_MASTER_NODE
-    EXAMPLE_GROUP EXAMPLE_USERS SKIP_CONFIGURE_HUE RESTART_INTERVAL
+    EXAMPLE_GROUP EXAMPLE_USERS SKIP_CONFIGURE_HUE RESTART_INTERVAL AUTO_CONFIRM
 )
 
 source "$APP_HOME/bin/utils.sh"
@@ -136,7 +136,10 @@ waitForCreatingEmrCluster() {
 
     confirmed="false"
     while [[ ! "$confirmed" = "true" ]]; do
-        read -p "$((num++)). Enter the emr cluster id: " EMR_CLUSTER_ID
+        if [[ "$AUTO_CONFIRM" = "false" ]]; then
+            read -p "$((num++)). Enter the emr cluster id: " EMR_CLUSTER_ID
+        fi
+
         echo -ne "\n>> Accepted the emr cluster id: \E[33m[ $EMR_CLUSTER_ID ]\E[0m\n\n"
 
         if [[ "$AUTH_PROVIDER" = "openldap" && "$SOLUTION" = "emr-native" ]]; then
@@ -289,12 +292,13 @@ parseArgs() {
         sssd-bind-dn:,sssd-bind-password:,\
         skip-install-openldap:,openldap-user-dn-pattern:,openldap-group-search-filter:,openldap-base-dn:,ranger-bind-dn:,ranger-bind-password:,hue-bind-dn:,hue-bind-password:,openldap-user-object-class:,\
         skip-install-mysql:,mysql-host:,mysql-root-password:,mysql-ranger-db-user-password:,skip-install-solr:,solr-host:,\
-        emr-cluster-id:,skip-configure-hue:\
+        emr-cluster-id:,skip-configure-hue:auto-confirm:\
     "
     # IMPORTANT!! -o option can not be omitted, even there are no any short options!
     # otherwise, parsing will go wrong!
     OPTS=$(getopt -o "" -l "$optString" -- "$@")
     exitCode=$?
+    AUTO_CONFIRM="false"
     if [ $exitCode -ne 0 ]; then
         echo "".
 #        printUsage
@@ -585,6 +589,10 @@ parseArgs() {
                 RESTART_INTERVAL="$2"
                 shift 2
                 ;;
+            --auto-confirm)
+                AUTO_CONFIRM="true"
+                shift 2
+                ;;
             --) # No more arguments
                 shift
                 break
@@ -602,7 +610,7 @@ parseArgs() {
     # build ranger repo file url
     RANGER_REPO_FILE_URL="$RANGER_REPO_URL/$RANGER_VERSION/ranger-repo.zip"
     # build ranger hive metastore file url
-    RANGER_REPO_HIVE_METASTORE_FILE_URL="https://github.com/Jrebel-i/ranger-repo/releases/download/2.1.0/ranger-2.1.0-metastore-plugin.tar.gz"
+    RANGER_REPO_HIVE_METASTORE_FILE_URL="https://github.com/norrishuang/Ranger-Metastore-Plugin/releases/download/v2.1.0/ranger-metastore-plugin-2.1.0-metastore-plugin.tar.gz"
     # build ranger admin url
     RANGER_URL="${RANGER_PROTOCOL}://${RANGER_HOST}:${RANGER_PORT}"
 
