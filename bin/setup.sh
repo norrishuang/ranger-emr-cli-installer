@@ -187,7 +187,12 @@ waitForCreatingEmrCluster() {
 
 askHueAndLdapIntegration() {
     num="$1"
-    integrateHueAndLdap=$(askForConfirmation "$num. Do you want Hue to integrate with LDAP? (Be careful! if yes, emr existing configuration will be overwritten!)")
+    if [[ "$AUTO_CONFIRM" = "false" ]]; then
+      integrateHueAndLdap=$(askForConfirmation "$num. Do you want Hue to integrate with LDAP? (Be careful! if yes, emr existing configuration will be overwritten!)")
+    else
+      integrateHueAndLdap="true"
+    fi
+
     if [[ "$integrateHueAndLdap" = "true" ]]; then
         SKIP_CONFIGURE_HUE="false"
         echo -ne "\n>> You selected: \E[33m[ Yes ]\E[0m\n\n"
