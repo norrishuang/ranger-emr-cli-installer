@@ -599,7 +599,7 @@ parseArgs() {
                 shift 2
                 ;;
             --auto-confirm)
-                AUTO_CONFIRM="true"
+                AUTO_CONFIRM="$2"
                 shift 2
                 ;;
             --) # No more arguments
