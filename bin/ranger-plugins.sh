@@ -320,8 +320,8 @@ installRangerOpenSourceHiveMetasorePlugin() {
     # Must init repo first before install plugin
     initRangerOpenSourceHiveMetasoreRepo
     printHeading "INSTALL RANGER HIVE METASTORE PLUGIN"
-    tar -zxvf /tmp/ranger-repo/ranger-$RANGER_VERSION-metastore-plugin.tar.gz -C /tmp/ &>/dev/null
-    installFilesDir=/tmp/ranger-$RANGER_VERSION-metastore-plugin
+    tar -zxvf /tmp/ranger-repo/ranger-metastore-plugin.tar.gz -C /tmp/ &>/dev/null
+    installFilesDir=/tmp/ranger-metastore-plugin
     confFile=$installFilesDir/install.properties
     # backup install.properties
     cp $confFile $confFile.$(date +%s)
@@ -329,7 +329,7 @@ installRangerOpenSourceHiveMetasorePlugin() {
     sed -i "s|@EMR_CLUSTER_ID@|$EMR_CLUSTER_ID|g" $confFile
     sed -i "s|@SOLR_HOST@|$SOLR_HOST|g" $confFile
     sed -i "s|@RANGER_HOST@|$RANGER_HOST|g" $confFile
-    installHome=/opt/ranger-$RANGER_VERSION-metastore-plugin
+    installHome=/opt/ranger-metastore-plugin
     for masterNode in $(getEmrMasterNodes); do
         printHeading "INSTALL RANGER HIVE METASTORE PLUGIN ON MASTER NODE: [ $masterNode ] "
         ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$masterNode sudo rm -rf $installFilesDir $installHome
