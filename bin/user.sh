@@ -106,10 +106,10 @@ addOpenldapUsers() {
         ldapsearch -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD -b "cn=$EXAMPLE_GROUP,ou=groups,$OPENLDAP_BASE_DN" >& /dev/null
         if [ "$?" != "0" ]; then
             GROUP_GID=$((3000+$RANDOM%999))
-            echo "用户组不存在 --${GROUP_GID}"
+            echo "user group is not exists --${GROUP_GID}"
         else
             GROUP_GID=`ldapsearch -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD -b "ou=groups,$OPENLDAP_BASE_DN" -s sub "(&(objectClass=posixGroup)(cn=$EXAMPLE_GROUP))" gidNumber | grep "^gidNumber:" | awk '{print $2}'`
-            echo "用户组存在 --${GROUP_GID}"
+            echo "user group is exists --${GROUP_GID}"
         fi
 
 
@@ -129,10 +129,9 @@ gidNumber: $GROUP_GID
 userPassword: $(slappasswd -s $COMMON_DEFAULT_PASSWORD)
 EOF
 
-        #检查是否有groups，如果不存在就创建，如果存在就直接把刚刚的用户添加到groups中
         ldapsearch -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD -b "cn=$EXAMPLE_GROUP,ou=groups,$OPENLDAP_BASE_DN" >& /dev/null
         if [ "$?" != "0" ]; then
-            echo '不存在，需要创建'
+            echo 'not exists, create it'
             cat << EOF | ldapadd -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD
 dn: cn=$EXAMPLE_GROUP,ou=groups,$OPENLDAP_BASE_DN
 cn: $EXAMPLE_GROUP
@@ -142,7 +141,7 @@ gidNumber: $GROUP_GID
 memberUid: $user
 EOF
         else
-            echo '已经存在添加用户'
+            echo 'exists, add memberUid'
             cat << EOF | ldapmodify -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD
 dn: cn=$EXAMPLE_GROUP,ou=groups,$OPENLDAP_BASE_DN
 changetype: modify
