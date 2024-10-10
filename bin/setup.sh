@@ -113,6 +113,7 @@ install() {
         addExampleUsers
     fi
 
+    configHive
 #    installRangerPlugins
 
 
@@ -977,6 +978,9 @@ case $ACTION in
     ;;
     configure-hue)
         configHue
+    ;;
+    configure-hive)
+        configHive
     ;;
 
     # --- EMR Operations --- #

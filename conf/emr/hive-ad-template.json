@@ -1,0 +1,18 @@
+[
+  {
+    "InstanceGroupId": "@MASTER_INSTANCE_GROUP_ID@",
+    "Configurations": [
+      {
+        "Classification": "hive-site",
+        "Properties": {
+          "hive.server2.authentication.ldap.url": "LDAP",
+          "hive.server2.authentication.ldap.url": "ldap://@OPENLDAP_HOST@",
+          "hive.server2.authentication.ldap.baseDN": "@OPENLDAP_BASE_DN@",
+          "hive.server2.authentication.ldap.userDNPattern": "uid=%s,@OPENLDAP_BASE_DN@",
+          "hive.server2.enable.doAs": "true",
+          "hive.security.authorization.manager": "org.apache.hadoop.Hive.ql.security.authorization.Plugin.sqlstd.SQLStdConfOnlyAuthorizerFactory"
+        }
+      }
+    ]
+  }
+]

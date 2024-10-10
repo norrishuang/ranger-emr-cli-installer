@@ -91,6 +91,24 @@ configHueOpenldapProps() {
     sed -i "s|@OPENLDAP_USER_OBJECT_CLASS@|$OPENLDAP_USER_OBJECT_CLASS|g" $confFile
 }
 
+configHiveADProps() {
+    confFile="$1"
+    sed -i "s|@MASTER_INSTANCE_GROUP_ID@|$(getMasterInstanceGroupId)|g" $confFile
+    sed -i "s|@MASTER_PRIVATE_FQDN@|$(getEmrMasterNodes)|g" $confFile
+    sed -i "s|@ORG_NAME@|$ORG_NAME|g" $confFile
+    sed -i "s|@OPENLDAP_HOST@|$OPENLDAP_HOST|g" $confFile
+    sed -i "s|@OPENLDAP_BASE_DN@|$OPENLDAP_BASE_DN|g" $confFile
+}
+
+configHiveOpenldapProps() {
+    confFile="$1"
+    sed -i "s|@MASTER_INSTANCE_GROUP_ID@|$(getMasterInstanceGroupId)|g" $confFile
+    sed -i "s|@MASTER_PRIVATE_FQDN@|$(getEmrMasterNodes)|g" $confFile
+    sed -i "s|@ORG_NAME@|$ORG_NAME|g" $confFile
+    sed -i "s|@OPENLDAP_HOST@|$OPENLDAP_HOST|g" $confFile
+    sed -i "s|@OPENLDAP_BASE_DN@|$OPENLDAP_BASE_DN|g" $confFile
+}
+
 configHue() {
     printHeading "UPDATE HUE CONFIGURATION"
     confFile=$APP_HOME/conf/emr/hue-$AUTH_PROVIDER.json
@@ -105,6 +123,28 @@ configHue() {
         configHueAdProps $confFile
     elif [ "$AUTH_PROVIDER" = "openldap" ]; then
         configHueOpenldapProps $confFile
+    else
+        echo "Invalid authentication type, only AD and LDAP are supported!"
+        exit 1
+    fi
+    aws emr modify-instance-groups --cluster-id $EMR_CLUSTER_ID \
+        --instance-groups file://$confFile
+}
+
+configHive() {
+    printHeading "UPDATE HIVE CONFIGURATION"
+    confFile=$APP_HOME/conf/emr/hive-$AUTH_PROVIDER.json
+    # backup existing version of conf file if exists
+    if [ -f "$confFile" ]; then
+        cp $confFile $confFile.$(date +%s)
+    fi
+    # copy a new version from template file
+    cp -f $APP_HOME/conf/emr/hive-$AUTH_PROVIDER-template.json $confFile
+
+    if [ "$AUTH_PROVIDER" = "ad" ]; then
+        configHiveAdProps $confFile
+    elif [ "$AUTH_PROVIDER" = "openldap" ]; then
+        configHiveOpenldapProps $confFile
     else
         echo "Invalid authentication type, only AD and LDAP are supported!"
         exit 1
