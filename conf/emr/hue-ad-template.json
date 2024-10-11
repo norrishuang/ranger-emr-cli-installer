@@ -79,6 +79,17 @@
             }
           }
         ]
+      },
+      {
+        "Classification": "hive-site",
+        "Properties": {
+          "hive.server2.authentication.ldap.url": "LDAP",
+          "hive.server2.authentication.ldap.url": "ldap://@OPENLDAP_HOST@",
+          "hive.server2.authentication.ldap.baseDN": "ou=users,@OPENLDAP_BASE_DN@",
+          "hive.server2.authentication.ldap.userDNPattern": "uid=%s,ou=users,@OPENLDAP_BASE_DN@",
+          "hive.server2.enable.doAs": "true",
+          "hive.security.authorization.manager": "org.apache.hadoop.Hive.ql.security.authorization.Plugin.sqlstd.SQLStdConfOnlyAuthorizerFactory"
+        }
       }
     ]
   }
