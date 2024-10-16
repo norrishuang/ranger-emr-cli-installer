@@ -57,8 +57,13 @@ EOF
             systemctl --type=service --state=running|egrep '^(hadoop|hbase|hive|spark|hue|presto|oozie|zookeeper|flink)\S*'
 EOF
             if [ ! "$?" = "0" ]; then
-                echo "ERROR!! connection to [ $node ] failed!"
-                exit 1
+                ssh -o ConnectTimeout=5 -o ConnectionAttempts=1 -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$node <<EOF
+                            systemctl --type=service --state=running|egrep '(hadoop|hbase|hive|spark|hue|presto|oozie|zookeeper|flink)\S*'
+EOF
+                if [ ! "$?" = "0" ]; then
+                  echo "ERROR!! connection to [ $node ] failed!"
+                  exit 1
+                fi
             fi
         done
     else
