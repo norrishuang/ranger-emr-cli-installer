@@ -611,6 +611,7 @@ parseArgs() {
             --enable-trino)
                 ENABLE_TRINO="$2"
                 shift 2
+                ;;
             --) # No more arguments
                 shift
                 break
