@@ -97,7 +97,7 @@ install() {
         installSssd
     fi
 
-    if [["$AUTH_PROVIDER" != "ad" || "$SOLUTION" != "emr-native" ] && [$ENABLE_TRINO = "true"]]
+    if [["$AUTH_PROVIDER" != "ad" || "$SOLUTION" != "emr-native" ] && [$ENABLE_TRINO = "true"]]; then
         configCA
     fi
 #    # updating hue configuration also need an EMR cluster is ready,
