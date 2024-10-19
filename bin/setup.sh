@@ -27,7 +27,7 @@ OPT_KEYS=(
     SKIP_INSTALL_SOLR SOLR_HOST RANGER_HOST RANGER_PORT RANGER_REPO_URL RANGER_VERSION RANGER_PLUGINS
     KERBEROS_KDC_HOST SKIP_MIGRATE_KERBEROS_DB OPENLDAP_HOST
     EMR_CLUSTER_ID MASTER_INSTANCE_GROUP_ID SLAVE_INSTANCE_GROUP_IDS EMR_MASTER_NODES EMR_SLAVE_NODES EMR_CLUSTER_NODES EMR_ZK_QUORUM EMR_HDFS_URL EMR_FIRST_MASTER_NODE
-    EXAMPLE_GROUP EXAMPLE_USERS SKIP_CONFIGURE_HUE RESTART_INTERVAL AUTO_CONFIRM
+    EXAMPLE_GROUP EXAMPLE_USERS SKIP_CONFIGURE_HUE RESTART_INTERVAL ENABLE_TRINO AUTO_CONFIRM
 )
 
 source "$APP_HOME/bin/utils.sh"
@@ -45,6 +45,7 @@ source "$APP_HOME/bin/ranger-plugins.sh"
 source "$APP_HOME/bin/sasl-gssapi.sh"
 source "$APP_HOME/bin/sssd.sh"
 source "$APP_HOME/bin/user.sh"
+source "$APP_HOME/bin/genCA.sh"
 
 install() {
     printHeading "ALL-IN-ONE INSTALL"
@@ -96,6 +97,9 @@ install() {
         installSssd
     fi
 
+    if [["$AUTH_PROVIDER" != "ad" || "$SOLUTION" != "emr-native" ] && [$ENABLE_TRINO = "true"]]
+        configCA
+    fi
 #    # updating hue configuration also need an EMR cluster is ready,
 #    # so only open-source can do now, for emr-native, need  defer to EMR cluster is up.
 #    if [ "$SOLUTION" = "open-source" ]; then
@@ -104,8 +108,10 @@ install() {
     # updating hue configuration action unless your emr cluster's configuration is empty.
     # by default, we will update it to achieve completed installation, if you have other
     # configurations, please set "--skip-configure-hue true".
-    if [ "$SKIP_CONFIGURE_HUE" = "false" ]; then
+    if [ "$SKIP_CONFIGURE_HUE" = "false" && $ENABLE_TRINO != "true" ]; then
         configHue
+    elif [ "$SKIP_CONFIGURE_HUE" = "false" && "$ENABLE_TRINO" = "true" ]; then
+        configALL
     fi
 #    fi
     # add example users if --example-users provided
@@ -602,6 +608,9 @@ parseArgs() {
                 AUTO_CONFIRM="$2"
                 shift 2
                 ;;
+            --enable-trino)
+                ENABLE_TRINO="$2"
+                shift 2
             --) # No more arguments
                 shift
                 break
@@ -1027,6 +1036,10 @@ case $ACTION in
 
     install-sssd)
         installSssd
+    ;;
+
+    generate-ca-trino)
+        configCA
     ;;
 
     # ----- Example Users Operations ----- #
