@@ -77,6 +77,7 @@ configHueAdProps() {
     sed -i "s|@HUE_BIND_DN@|$HUE_BIND_DN|g" $confFile
     sed -i "s|@HUE_BIND_PASSWORD@|$HUE_BIND_PASSWORD|g" $confFile
     sed -i "s|@AD_USER_OBJECT_CLASS@|$AD_USER_OBJECT_CLASS|g" $confFile
+    sed -i "s|@TRINO_SHARED_SECRET@|$TRINO_SHARED_SECRET|g" $confFile
 }
 
 configHueOpenldapProps() {
@@ -133,14 +134,14 @@ configHue() {
 }
 
 configALL() {
-    printHeading "UPDATE HUE CONFIGURATION"
-    confFile=$APP_HOME/conf/emr/hue-$AUTH_PROVIDER.json
+    printHeading "UPDATE ALL CONFIGURATION"
+    confFile=$APP_HOME/conf/emr/all-$AUTH_PROVIDER.json
     # backup existing version of conf file if exists
     if [ -f "$confFile" ]; then
         cp $confFile $confFile.$(date +%s)
     fi
     # copy a new version from template file
-    cp -f $APP_HOME/conf/emr/hue-$AUTH_PROVIDER-template.json $confFile
+    cp -f $APP_HOME/conf/emr/all-$AUTH_PROVIDER-template.json $confFile
 
     if [ "$AUTH_PROVIDER" = "ad" ]; then
         configHueAdProps $confFile
