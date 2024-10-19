@@ -307,7 +307,7 @@ parseArgs() {
         sssd-bind-dn:,sssd-bind-password:,\
         skip-install-openldap:,openldap-user-dn-pattern:,openldap-group-search-filter:,openldap-base-dn:,ranger-bind-dn:,ranger-bind-password:,hue-bind-dn:,hue-bind-password:,openldap-user-object-class:,\
         skip-install-mysql:,mysql-host:,mysql-root-password:,mysql-ranger-db-user-password:,skip-install-solr:,solr-host:,\
-        emr-cluster-id:,skip-configure-hue:,auto-confirm:\
+        emr-cluster-id:,skip-configure-hue:,auto-confirm:,enable-trino:\
     "
     # IMPORTANT!! -o option can not be omitted, even there are no any short options!
     # otherwise, parsing will go wrong!
