@@ -145,7 +145,7 @@ configALL() {
     if [ "$AUTH_PROVIDER" = "ad" ]; then
         configHueAdProps $confFile
     elif [ "$AUTH_PROVIDER" = "openldap" ]; then
-        TRINO_SHARED_SECRET=(openssl rand 512 | base64)
+        TRINO_SHARED_SECRET=$(openssl rand -base64 512 | tr -d ' ')
         configHueOpenldapProps $confFile
     else
         echo "Invalid authentication type, only AD and LDAP are supported!"
