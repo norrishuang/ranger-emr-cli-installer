@@ -15,7 +15,8 @@ configCA() {
 
 generateCAForTrino() {
     for node in $(getEmrMasterNodes); do
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$node <<EOSSH
+        # shellcheck disable=SC2087
+        ssh -o StrictHostKeyChecking=no -i "${SSH_KEY}" -T hadoop@"${node}" <<EOSSH
         mkdir -p /mnt/demoCA && cd /mnt/demoCA
         # get ip address
         local_ipv4=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4) 
