@@ -93,9 +93,9 @@ install() {
     # so, at this time point, no EMR cluster is available, installing sssd has to defer to EMR cluster is up.
     # Only AD + EMR Native Ranger solution need NOT install sssd, because this job will complete automatically
     # when create emr cluster by enable cross-realm trust, for all the other 3 solutions, this job is required
-    if [[ "$AUTH_PROVIDER" != "ad" || "$SOLUTION" != "emr-native" ]]; then
+    if [ "$AUTH_PROVIDER" != "ad" ] || [ "$SOLUTION" != "emr-native" ]; then
         installSssd
-        if [$ENABLE_TRINO = "true"]; then
+        if [ "$ENABLE_TRINO" = "true" ]; then
             configCA
         fi
     fi
@@ -108,14 +108,14 @@ install() {
     # updating hue configuration action unless your emr cluster's configuration is empty.
     # by default, we will update it to achieve completed installation, if you have other
     # configurations, please set "--skip-configure-hue true".
-    if [ "$SKIP_CONFIGURE_HUE" = "false" && $ENABLE_TRINO != "true" ]; then
+    if [ "$SKIP_CONFIGURE_HUE" = "false" ] && [ "$ENABLE_TRINO" != "true" ]; then
         configHue
-    elif [ "$SKIP_CONFIGURE_HUE" = "false" && "$ENABLE_TRINO" = "true" ]; then
+    elif [ "$SKIP_CONFIGURE_HUE" = "false" ] && [ "$ENABLE_TRINO" = "true" ]; then
         configALL
     fi
 #    fi
     # add example users if --example-users provided
-    if [[ "$AUTH_PROVIDER" = "openldap" && "${EXAMPLE_USERS[*]}" != "" ]]; then
+    if [ "$AUTH_PROVIDER" = "openldap" ] && [ "${EXAMPLE_USERS[*]}" != "" ]; then
         addExampleUsers
     fi
 
