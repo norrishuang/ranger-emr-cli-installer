@@ -68,11 +68,11 @@ installRangerUsersync() {
 #    fi
     curDir=$(pwd)
     # must run under project root dir.
-    cd $installHome
+    cd "${installHome}"
     export JAVA_HOME=$JAVA_HOME
     sh setup.sh
     sh set_globals.sh
-    cd $curDir
+    cd "${curDir}"
     # IMPORTANT! must enable usersync in ranger-ugsync-site.xml, by default, it is disabled!
     ugsyncConfFile=/etc/ranger/usersync/conf/ranger-ugsync-site.xml
     cp $ugsyncConfFile $ugsyncConfFile.$(date +%s)
@@ -85,7 +85,7 @@ removeRangerUsersync() {
     echo "Stop Ranger UserSync Service..."
     ranger-usersync stop
     echo "Remove Ranger UserSync..."
-    rm -rf /opt/ranger-$RANGER_VERSION-usersync
+    rm -rf /opt/ranger-"${RANGER_VERSION}"-usersync
     rm -rf /etc/ranger/usersync
     rm -rf /var/log/ranger/usersync
     echo "BE CAREFUL: The following ranger files will be DELETED!"
