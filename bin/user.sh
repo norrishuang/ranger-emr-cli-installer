@@ -106,10 +106,10 @@ addOpenldapUsers() {
         ldapsearch -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD -b "cn=$EXAMPLE_GROUP,ou=groups,$OPENLDAP_BASE_DN" >& /dev/null
         if [ "$?" != "0" ]; then
             GROUP_GID=$((3000+$RANDOM%999))
-            echo "user group is not exists --${GROUP_GID}"
+            echo "user group is not exists"
         else
             GROUP_GID=`ldapsearch -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD -b "ou=groups,$OPENLDAP_BASE_DN" -s sub "(&(objectClass=posixGroup)(cn=$EXAMPLE_GROUP))" gidNumber | grep "^gidNumber:" | awk '{print $2}'`
-            echo "user group is exists --${GROUP_GID}"
+            echo "user group is exists"
         fi
 
 
