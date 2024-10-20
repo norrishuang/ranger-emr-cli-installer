@@ -119,8 +119,8 @@
         }
       },
       {
-        "classification":"trino-config",
-        "properties":{
+        "Classification":"trino-config",
+        "Properties":{
             "http-server.https.enabled":"true",
             "http-server.https.keystore.path":"/mnt/demoCA/certificate.p12",
             "http-server.https.port":"8446",
@@ -133,8 +133,8 @@
         ]
     },
     {
-        "classification":"trino-password-authenticator",
-        "properties":{
+        "Classification":"trino-password-authenticator",
+        "Properties":{
             "ldap.user-bind-pattern":"uid=${USER},ou=users,@OPENLDAP_BASE_DN@",
             "password-authenticator.name":"ldap",
             "ldap.allow-insecure":"true",
@@ -144,8 +144,8 @@
         ]
     },
     {
-        "classification": "trino-connector-hive",
-        "properties": {
+        "Classification": "trino-connector-hive",
+        "Properties": {
             "hive.security": "allow-all",
             "hive.metastore.uri": "thrift://@MASTER_PRIVATE_FQDN@:9083",
             "hive.metastore.thrift.impersonation.enabled": "true"
