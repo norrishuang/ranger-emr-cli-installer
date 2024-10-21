@@ -92,7 +92,7 @@ configHueOpenldapProps() {
     sed -i "s|@HUE_BIND_DN@|$HUE_BIND_DN|g" $confFile
     sed -i "s|@HUE_BIND_PASSWORD@|$HUE_BIND_PASSWORD|g" $confFile
     sed -i "s|@OPENLDAP_USER_OBJECT_CLASS@|$OPENLDAP_USER_OBJECT_CLASS|g" $confFile
-    sed -i "s|@TRINO_SHARED_SECRET@|$(TRINO_SHARED_SECRET)|g" $confFile
+    sed -i "s|@TRINO_SHARED_SECRET@|$TRINO_SHARED_SECRET|g" $confFile
 }
 
 #configHiveADProps() {
