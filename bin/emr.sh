@@ -70,6 +70,7 @@ configHueAdProps() {
     confFile="$1"
     sed -i "s|@MASTER_INSTANCE_GROUP_ID@|$(getMasterInstanceGroupId)|g" $confFile
     sed -i "s|@MASTER_PRIVATE_FQDN@|$(getEmrMasterNodes)|g" $confFile
+    sed -i "s|@MASTER_FIRST_NODE@|$(getEmrFirstMasterNode)|g" $confFile
     sed -i "s|@ORG_NAME@|$ORG_NAME|g" $confFile
     sed -i "s|@AD_DOMAIN@|$AD_DOMAIN|g" $confFile
     sed -i "s|@AD_HOST@|$AD_HOST|g" $confFile
@@ -84,13 +85,14 @@ configHueOpenldapProps() {
     confFile="$1"
     sed -i "s|@MASTER_INSTANCE_GROUP_ID@|$(getMasterInstanceGroupId)|g" $confFile
     sed -i "s|@MASTER_PRIVATE_FQDN@|$(getEmrMasterNodes)|g" $confFile
+    sed -i "s|@MASTER_FIRST_MASTER_NODE@|$(getEmrFirstMasterNode)|g" $confFile
     sed -i "s|@ORG_NAME@|$ORG_NAME|g" $confFile
     sed -i "s|@OPENLDAP_HOST@|$OPENLDAP_HOST|g" $confFile
     sed -i "s|@OPENLDAP_BASE_DN@|$OPENLDAP_BASE_DN|g" $confFile
     sed -i "s|@HUE_BIND_DN@|$HUE_BIND_DN|g" $confFile
     sed -i "s|@HUE_BIND_PASSWORD@|$HUE_BIND_PASSWORD|g" $confFile
     sed -i "s|@OPENLDAP_USER_OBJECT_CLASS@|$OPENLDAP_USER_OBJECT_CLASS|g" $confFile
-    sed -i "s|@TRINO_SHARED_SECRET@|$TRINO_SHARED_SECRET|g" $confFile
+    sed -i "s|@TRINO_SHARED_SECRET@|$(TRINO_SHARED_SECRET)|g" $confFile
 }
 
 #configHiveADProps() {
@@ -146,7 +148,8 @@ configALL() {
     if [ "$AUTH_PROVIDER" = "ad" ]; then
         configHueAdProps $confFile
     elif [ "$AUTH_PROVIDER" = "openldap" ]; then
-        TRINO_SHARED_SECRET=$(openssl rand -base64 512 | tr -d ' ')
+        TRINO_SHARED_SECRET=$(openssl rand -base64 512)
+        TRINO_SHARED_SECRET=$(echo "$TRINO_SHARED_SECRET" | tr -d '\n')
         configHueOpenldapProps $confFile
     else
         echo "Invalid authentication type, only AD and LDAP are supported!"

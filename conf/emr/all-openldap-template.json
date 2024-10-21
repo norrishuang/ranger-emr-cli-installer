@@ -74,7 +74,7 @@
           {
             "Classification": "spark",
             "Properties": {
-              "sql_server_host": "@MASTER_PRIVATE_FQDN@"
+              "sql_server_host": "@MASTER_FIRST_NODE@"
             }
           },
           {
@@ -94,7 +94,7 @@
                             "Classification":"trino",
                             "Properties":{
                                 "name":"Trino",
-                                "options":"{\"url\": \"jdbc:trino://ip-10-192-11-203.ec2.internal:8446/hive/default?SSL=true&SSLKeyStorePath=/mnt/demoCA/certificate.p12&SSLKeyStorePassword=1234\", \"driver\": \"io.trino.jdbc.TrinoDriver\",\"has_impersonation\": true}",
+                                "options":"{\"url\": \"jdbc:trino://@MASTER_FIRST_NODE@:8446/hive/default?SSL=true&SSLKeyStorePath=/mnt/demoCA/certificate.p12&SSLKeyStorePassword=1234\", \"driver\": \"io.trino.jdbc.TrinoDriver\",\"has_impersonation\": true}",
                                 "interface":"jdbc"
                             },
                             "Configurations":[
@@ -110,7 +110,7 @@
       {
         "Classification": "hive-site",
         "Properties": {
-          "hive.server2.authentication.ldap.url": "LDAP",
+          "hive.server2.authentication": "LDAP",
           "hive.server2.authentication.ldap.url": "ldap://@OPENLDAP_HOST@",
           "hive.server2.authentication.ldap.baseDN": "ou=users,@OPENLDAP_BASE_DN@",
           "hive.server2.authentication.ldap.userDNPattern": "uid=%s,ou=users,@OPENLDAP_BASE_DN@",
@@ -147,7 +147,7 @@
         "Classification": "trino-connector-hive",
         "Properties": {
             "hive.security": "allow-all",
-            "hive.metastore.uri": "thrift://@MASTER_PRIVATE_FQDN@:9083",
+            "hive.metastore.uri": "thrift://@MASTER_FIRST_NODE@:9083",
             "hive.metastore.thrift.impersonation.enabled": "true"
         },
         "Configurations": []
