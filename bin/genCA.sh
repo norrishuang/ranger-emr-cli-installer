@@ -15,6 +15,7 @@ configCA() {
 
 generateCAForTrino() {
     for node in $(getEmrMasterNodes); do
+        echo "send shell script to master nodes"
         scp -o StrictHostKeyChecking=no -i $SSH_KEY $APP_HOME/bin/set_trino_ldap.sh hadoop@"${node}":/root/
         echo "set trino configuration of ldap"
         ssh -o StrictHostKeyChecking=no -i "${SSH_KEY}" -T hadoop@"${node}" <<EOSSH
