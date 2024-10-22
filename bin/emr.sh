@@ -159,7 +159,7 @@ configALL() {
 
 configTrinoCore() {
    printHeading "UPDATE TRINO CORE NODE CONFIGURATION"
-   confFile=$APP_HOME/conf/emr/trino-core-$AUTH_PROVIDER-template.json
+   confFile=$APP_HOME/conf/emr/trino-core-$AUTH_PROVIDER.json
    # backup existing version of conf file if exists
    if [ -f "$confFile" ]; then
        cp $confFile $confFile.$(date +%s)

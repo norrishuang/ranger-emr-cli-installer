@@ -358,6 +358,7 @@ EOF
 }
 
 reInstallMetastorePlugin() {
+    installHome=/opt/ranger-metastore-plugin
     for masterNode in $(getEmrMasterNodes); do
         printHeading "RE-INSTALL RANGER HIVE METASTORE PLUGIN ON MASTER NODE: [ $masterNode ] "
 
