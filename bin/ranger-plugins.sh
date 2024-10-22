@@ -330,7 +330,7 @@ installRangerOpenSourceHiveMetasorePlugin() {
     # Must init repo first before install plugin
     initRangerOpenSourceHiveMetasoreRepo
     printHeading "INSTALL RANGER HIVE METASTORE PLUGIN"
-    tar -zxvf /tmp/ranger-repo/ranger-metastore-plugin.tar.gz -C /tmp/ &>/dev/null
+    tar -zxvf /tmp/ranger-repo/ranger-2.1.0-metastore-plugin.tar.gz -C /tmp/ &>/dev/null
     installFilesDir=/tmp/ranger-metastore-plugin
     confFile=$installFilesDir/install.properties
     # backup install.properties
