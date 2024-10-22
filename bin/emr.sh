@@ -148,7 +148,6 @@ configALL() {
         TRINO_SHARED_SECRET=$(openssl rand -base64 512)
         TRINO_SHARED_SECRET=$(echo "$TRINO_SHARED_SECRET" | tr -d '\n')
         configHueOpenldapProps $confFile
-        configTrinoCore
     else
         echo "Invalid authentication type, only AD and LDAP are supported!"
         exit 1
@@ -176,6 +175,7 @@ configTrinoCore() {
        echo "Invalid authentication type, only AD and LDAP are supported!"
        exit 1
    fi
+   echo 'Modify Slave Node Instance group:' + $(getSlaveInstanceGroupIds)
    aws emr modify-instance-groups --cluster-id $EMR_CLUSTER_ID \
        --instance-groups file://$confFile
 }

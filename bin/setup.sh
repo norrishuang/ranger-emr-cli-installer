@@ -112,6 +112,7 @@ install() {
         configHue
     elif [ "$SKIP_CONFIGURE_HUE" = "false" ] && [ "$ENABLE_TRINO" = "true" ]; then
         configALL
+        configTrinoCore
     fi
 #    fi
     # add example users if --example-users provided
