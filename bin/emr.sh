@@ -85,7 +85,7 @@ configHueOpenldapProps() {
     confFile="$1"
     sed -i "s|@MASTER_INSTANCE_GROUP_ID@|$(getMasterInstanceGroupId)|g" $confFile
     sed -i "s|@MASTER_PRIVATE_FQDN@|$(getEmrMasterNodes)|g" $confFile
-    sed -i "s|@MASTER_FIRST_MASTER_NODE@|$(getEmrFirstMasterNode)|g" $confFile
+    sed -i "s|@MASTER_FIRST_NODE@|$(getEmrFirstMasterNode)|g" $confFile
     sed -i "s|@ORG_NAME@|$ORG_NAME|g" $confFile
     sed -i "s|@OPENLDAP_HOST@|$OPENLDAP_HOST|g" $confFile
     sed -i "s|@OPENLDAP_BASE_DN@|$OPENLDAP_BASE_DN|g" $confFile
