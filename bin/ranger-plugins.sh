@@ -364,6 +364,7 @@ reInstallMetastorePlugin() {
         ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$masterNode <<EOF
             sudo sh $installHome/enable-metastore-plugin.sh
 EOF
+    done
     restartHiveMetasoreServer2
 }
 
