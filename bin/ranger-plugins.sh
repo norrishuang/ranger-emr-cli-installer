@@ -357,6 +357,16 @@ EOF
     restartHiveMetasoreServer2
 }
 
+reInstallMetastorePlugin() {
+    for masterNode in $(getEmrMasterNodes); do
+        printHeading "RE-INSTALL RANGER HIVE METASTORE PLUGIN ON MASTER NODE: [ $masterNode ] "
+
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$masterNode <<EOF
+            sudo sh $installHome/enable-metastore-plugin.sh
+EOF
+    restartHiveMetasoreServer2
+}
+
 restartHiveMetasoreServer2() {
     printHeading "RESTART HIVESERVER2"
     for masterNode in $(getEmrMasterNodes); do

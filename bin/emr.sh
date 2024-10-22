@@ -104,14 +104,11 @@ configHueOpenldapProps() {
 #    sed -i "s|@OPENLDAP_BASE_DN@|$OPENLDAP_BASE_DN|g" $confFile
 #}
 #
-#configHiveOpenldapProps() {
-#    confFile="$1"
-#    sed -i "s|@MASTER_INSTANCE_GROUP_ID@|$(getMasterInstanceGroupId)|g" $confFile
-#    sed -i "s|@MASTER_PRIVATE_FQDN@|$(getEmrMasterNodes)|g" $confFile
-#    sed -i "s|@ORG_NAME@|$ORG_NAME|g" $confFile
-#    sed -i "s|@OPENLDAP_HOST@|$OPENLDAP_HOST|g" $confFile
-#    sed -i "s|@OPENLDAP_BASE_DN@|$OPENLDAP_BASE_DN|g" $confFile
-#}
+configTrinoCoreOpenldapProps() {
+   confFile="$1"
+   sed -i "s|@SLAVE_INSTANCE_GROUP_ID@|$(getSlaveInstanceGroupIds)|g" $confFile
+   sed -i "s|@TRINO_SHARED_SECRET@|$TRINO_SHARED_SECRET|g" $confFile
+}
 
 configHue() {
     printHeading "UPDATE HUE CONFIGURATION"
@@ -151,6 +148,7 @@ configALL() {
         TRINO_SHARED_SECRET=$(openssl rand -base64 512)
         TRINO_SHARED_SECRET=$(echo "$TRINO_SHARED_SECRET" | tr -d '\n')
         configHueOpenldapProps $confFile
+        configTrinoCore
     else
         echo "Invalid authentication type, only AD and LDAP are supported!"
         exit 1
@@ -159,27 +157,28 @@ configALL() {
         --instance-groups file://$confFile
 }
 
-#configHive() {
-#    printHeading "UPDATE HIVE CONFIGURATION"
-#    confFile=$APP_HOME/conf/emr/hive-$AUTH_PROVIDER.json
-#    # backup existing version of conf file if exists
-#    if [ -f "$confFile" ]; then
-#        cp $confFile $confFile.$(date +%s)
-#    fi
-#    # copy a new version from template file
-#    cp -f $APP_HOME/conf/emr/hive-$AUTH_PROVIDER-template.json $confFile
-#
-#    if [ "$AUTH_PROVIDER" = "ad" ]; then
-#        configHiveAdProps $confFile
-#    elif [ "$AUTH_PROVIDER" = "openldap" ]; then
-#        configHiveOpenldapProps $confFile
-#    else
-#        echo "Invalid authentication type, only AD and LDAP are supported!"
-#        exit 1
-#    fi
-#    aws emr modify-instance-groups --cluster-id $EMR_CLUSTER_ID \
-#        --instance-groups file://$confFile
-#}
+configTrinoCore() {
+   printHeading "UPDATE TRINO CORE NODE CONFIGURATION"
+   confFile=$APP_HOME/conf/emr/trino-core-$AUTH_PROVIDER-template.json
+   # backup existing version of conf file if exists
+   if [ -f "$confFile" ]; then
+       cp $confFile $confFile.$(date +%s)
+   fi
+   # copy a new version from template file
+   cp -f $APP_HOME/conf/emr/trino-core-$AUTH_PROVIDER-template.json $confFile
+
+   if [ "$AUTH_PROVIDER" = "ad" ]; then
+    #    configHiveAdProps $confFile
+       echo "AD is not Implement"
+   elif [ "$AUTH_PROVIDER" = "openldap" ]; then
+       configTrinoCoreOpenldapProps $confFile
+   else
+       echo "Invalid authentication type, only AD and LDAP are supported!"
+       exit 1
+   fi
+   aws emr modify-instance-groups --cluster-id $EMR_CLUSTER_ID \
+       --instance-groups file://$confFile
+}
 
 # ----------------------------------------    Query Cluster Info Operations   ---------------------------------------- #
 

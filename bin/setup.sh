@@ -119,8 +119,9 @@ install() {
         addExampleUsers
     fi
 
-#    installRangerPlugins
 
+    printHeading "RE-INSTALL METASTORE PLUGIN"
+    reInstallMetastorePlugin
 
     printHeading "ALL DONE!!"
 }
@@ -276,11 +277,11 @@ installRangerPlugins() {
         open-source-hbase)
             installRangerOpenSourceHbasePlugin
             ;;
-        open-source-metastore)
-            installRangerOpenSourceHiveMetasorePlugin
-            ;;
         open-source-yarn)
             installRangerOpenSourceYarnPlugin
+            ;;
+        open-source-metastore)
+            installRangerOpenSourceHiveMetasorePlugin
             ;;
         *)
             if [ "$plugin" = "" ]; then
