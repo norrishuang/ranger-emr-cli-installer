@@ -359,29 +359,51 @@ EOF
 
 reInstallMetastorePlugin() {
     installHome=/opt/ranger-metastore-plugin
-    for masterNode in $(getEmrMasterNodes); do
-        printHeading "RE-INSTALL RANGER HIVE METASTORE PLUGIN ON MASTER NODE: [ $masterNode ] "
+    ## waiting emrmasternode instance group's status is RUNNING, then execute restart hive server
+    # 设置条件变量
+    RECONFIG_GROUPS=(aws emr describe-cluster --region $REGION --cluster-id $EMR_CLUSTER_ID | \
+                jq -r '.Cluster.InstanceGroups[] | select(.Status.State=="RECONFIGURING") | .Id' | tr -s ' ')
 
+    while [ "$RECONFIG_GROUPS" != "" ]; do
+        # interval 5 sec
+        sleep 10
+        RECONFIG_GROUPS=(aws emr describe-cluster --region $REGION --cluster-id $EMR_CLUSTER_ID | \
+                jq -r '.Cluster.InstanceGroups[] | select(.Status.State=="RECONFIGURING") | .Id' | tr -s ' ')
+        # 
+        if [ "$RECONFIG_GROUPS" != "" ]; then
+            echo "Reconfiguring, please wait."
+        else
+            echo "all instance groups's reconfiguration success."
+            break
+        fi
+    done
+    
+    for masterNode in $(getEmrMasterNodes); do
+        printHeading "RE-INSTALL RANGER HIVE METASTORE PLUGIN AND RESTRT HIVE-SERVER2 ON MASTER NODE: [ $masterNode ] "
+        echo "RESTART HIVESERVER2 ON MASTER NODE: [ $masterNode ]"
         ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$masterNode <<EOF
             sudo sh $installHome/enable-metastore-plugin.sh
+            sudo systemctl stop hive-server2 hive-hcatalog-server
+            sudo systemctl start hive-server2 hive-hcatalog-server
 EOF
+        echo "HIVESERVER2 RESTARTED ON MASTER NODE: [ $masterNode ]"
     done
-    restartHiveMetasoreServer2
+    # restartHiveMetasoreServer2
 }
 
-restartHiveMetasoreServer2() {
-    printHeading "RESTART HIVESERVER2"
-    for masterNode in $(getEmrMasterNodes); do
-        echo "STOP HIVESERVER2 ON MASTER NODE: [ $masterNode ]"
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$masterNode sudo systemctl stop hive-server2 hive-hcatalog-server
+# restartHiveMetasoreServer2() {
+#     printHeading "RESTART HIVESERVER2"
+#     for masterNode in $(getEmrMasterNodes); do
+#         echo "STOP HIVESERVER2 ON MASTER NODE: [ $masterNode ]"
+#         ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$masterNode sudo systemctl stop hive-server2 hive-hcatalog-server
 
-        sleep $RESTART_INTERVAL
-        echo "START HIVESERVER2 ON MASTER NODE: [ $masterNode ]"
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$masterNode sudo systemctl start hive-server2 hive-hcatalog-server
+#         sleep $RESTART_INTERVAL
+#         echo "START HIVESERVER2 ON MASTER NODE: [ $masterNode ]"
+#         ssh -o StrictHostKeyChecking=no -i $SSH_KEY -T hadoop@$masterNode sudo systemctl start hive-server2 hive-hcatalog-server
 
-        sleep $RESTART_INTERVAL
-    done
-}
+#         sleep $RESTART_INTERVAL
+#     done
+# }
 
 # -------------------------------------   Open Source Yarn PlugIn Operations   --------------------------------------- #
 
