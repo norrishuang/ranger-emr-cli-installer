@@ -31,8 +31,9 @@ validateTime()
 
 installXmlstarletIfNotExists() {
     if ! xmlstarlet --version &>/dev/null; then
-        yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E '%{rhel}').noarch.rpm &>/dev/null
-        yum -y install xmlstarlet &>/dev/null
+        # yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E '%{rhel}').noarch.rpm &>/dev/null
+        sudo amazon-linux-extras install epel
+        yum -y install xmlstarlet
     fi
 }
 
