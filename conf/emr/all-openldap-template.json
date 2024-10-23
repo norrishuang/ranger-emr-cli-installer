@@ -72,11 +72,13 @@
             ]
           },
           {
-            "Classification": "spark",
-            "Properties": {
-              "sql_server_host": "@MASTER_FIRST_NODE@"
-            }
-          },
+						"Classification": "beeswax",
+						"Properties": {
+							"auth_username": "hue",
+							"auth_password": "@HUE_BIND_PASSWORD@"
+						},
+						"Configurations": []
+					},
           {
             "Classification":"notebook",
             "Properties":{
