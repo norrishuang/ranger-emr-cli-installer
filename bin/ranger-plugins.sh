@@ -361,12 +361,13 @@ reInstallMetastorePlugin() {
     installHome=/opt/ranger-metastore-plugin
     ## waiting emrmasternode instance group's status is RUNNING, then execute restart hive server
     # 设置条件变量
-    RECONFIG_GROUPS=(aws emr describe-cluster --region $REGION --cluster-id $EMR_CLUSTER_ID | jq -r '.Cluster.InstanceGroups[] | select(.Status.State=="RECONFIGURING") | .Id' | tr -s ' ')
+    sleep 5
+    RECONFIG_GROUPS=$(aws emr describe-cluster --region $REGION --cluster-id $EMR_CLUSTER_ID | jq -r '.Cluster.InstanceGroups[] | select(.Status.State=="RECONFIGURING") | .Id' | tr -s ' ')
 
     while [ "$RECONFIG_GROUPS" != "" ]; do
         # interval 5 sec
         sleep 10
-        RECONFIG_GROUPS=(aws emr describe-cluster --region $REGION --cluster-id $EMR_CLUSTER_ID | jq -r '.Cluster.InstanceGroups[] | select(.Status.State=="RECONFIGURING") | .Id' | tr -s ' ')
+        RECONFIG_GROUPS=$(aws emr describe-cluster --region $REGION --cluster-id $EMR_CLUSTER_ID | jq -r '.Cluster.InstanceGroups[] | select(.Status.State=="RECONFIGURING") | .Id' | tr -s ' ')
         # 
         if [ "$RECONFIG_GROUPS" != "" ]; then
             echo "Reconfiguring, please wait."
