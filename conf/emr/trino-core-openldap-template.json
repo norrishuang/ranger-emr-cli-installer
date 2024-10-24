@@ -5,12 +5,7 @@
       {
         "Classification":"trino-config",
         "Properties":{
-            "http-server.https.enabled":"true",
-            "http-server.https.keystore.path":"/mnt/demoCA/certificate.p12",
-            "http-server.https.port":"8446",
-            "http-server.authentication.type":"PASSWORD",
-            "internal-communication.shared-secret":"@TRINO_SHARED_SECRET@",
-            "http-server.https.keystore.key":"1234"
+            "internal-communication.shared-secret":"@TRINO_SHARED_SECRET@"
         },
         "Configurations":[
 
