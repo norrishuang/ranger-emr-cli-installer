@@ -15,7 +15,18 @@
         "Configurations":[
 
         ]
-    }
+      },
+      {
+        "Classification":"trino-password-authenticator",
+        "Properties":{
+            "ldap.user-bind-pattern":"uid=${USER},ou=users,@OPENLDAP_BASE_DN@",
+            "password-authenticator.name":"ldap",
+            "ldap.allow-insecure":"true",
+            "ldap.url":"ldap://@OPENLDAP_HOST@:389"
+        },
+        "Configurations":[
+        ]
+      }
     ]
   }
 ]
