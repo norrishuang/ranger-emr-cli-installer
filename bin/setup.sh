@@ -137,12 +137,7 @@ waitForCreatingEmrCluster() {
             echo -ne "$((num++)). Create an emr cluster from emr web console. \n\n"
             echo -ne ">> Be sure to select this ec2 instance profile: \E[33m[ EMR_EC2_RangerRole ]\n\n\E[0m"
             echo -ne ">> Be sure to select this security configuration: \E[33m[ ranger@$RANGER_HOST ]\n\n\E[0m"
-            
-            if [[ "$AUTO_CONFIRM" = "false" ]]; then
-                confirmed=$(askForConfirmation "Have you created the cluster?")
-            else
-                confirmed="true"
-            fi
+            confirmed=$(askForConfirmation "Have you created the cluster?")
             echo ""
         done
     fi
